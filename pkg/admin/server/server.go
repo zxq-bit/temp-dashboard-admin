@@ -7,6 +7,8 @@ import (
 	"github.com/caicloud/nirvana/config"
 	"github.com/caicloud/nirvana/log"
 
+	"github.com/caicloud/dashboard-admin/pkg/admin/helper"
+	"github.com/caicloud/dashboard-admin/pkg/admin/rest"
 	"github.com/caicloud/dashboard-admin/pkg/constants"
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
@@ -17,7 +19,7 @@ type Server struct {
 
 	stopCh chan struct{}
 
-	kc kubernetes.Interface
+	c *helper.Content
 }
 
 func NewServer() (*Server, error) {
@@ -50,14 +52,20 @@ func (s *Server) init(config *nirvana.Config) error {
 	log.Info(s.cfg.String())
 
 	// kube
-	s.kc, e = kubernetes.NewClientFromFlags(kubeHost, kubeConfig)
+	kc, e := kubernetes.NewClientFromFlags(kubeHost, kubeConfig)
 	if e != nil {
 		return fmt.Errorf("NewClientFromFlags failed, %v", e)
 	}
 
+	// helper
+	c, e := helper.NewContent(kc)
+	if e != nil {
+		return fmt.Errorf("NewContent failed, %v", e)
+	}
+
 	// descriptor
 	config.Configure(
-		nirvana.Descriptor(),
+		nirvana.Descriptor(rest.InitNirvanaDescriptors(c)...),
 	)
 	return nil
 }

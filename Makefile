@@ -41,7 +41,7 @@ DOCKER_TARGETS := $(TARGETS)
 # The final built images are:
 #   $[REGISTRY]/$[IMAGE_PREFIX]$[TARGET]$[IMAGE_SUFFIX]:$[VERSION]
 # $[REGISTRY] is an item from $[REGISTRIES], $[TARGET] is an item from $[TARGETS].
-IMAGE_PREFIX ?= $(strip cluster-)
+IMAGE_PREFIX ?= $(strip dashboard-)
 IMAGE_SUFFIX ?= $(strip )
 
 # Container registries.

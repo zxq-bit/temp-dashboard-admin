@@ -30,7 +30,7 @@ type ListMetaData struct {
 
 // cluster
 
-type Cluster struct {
+type ClusterInfo struct {
 	// meta
 	Metadata ObjectMetaData `json:"metadata"`
 	UserID   string         `json:"userID"`
@@ -44,9 +44,9 @@ type Cluster struct {
 	PodNum  int     `json:"podNum"`
 }
 
-type ClusterList struct {
-	MetaData ListMetaData `json:"metadata"`
-	Items    []Cluster    `json:"items"`
+type ClusterInfoList struct {
+	MetaData ListMetaData  `json:"metadata"`
+	Items    []ClusterInfo `json:"items"`
 }
 
 type Resource struct {
@@ -68,7 +68,7 @@ type Logical struct {
 
 // machine
 
-type Machine struct {
+type MachineSummary struct {
 	Cluster     string        `json:"cluster"`
 	UserID      string        `json:"userID"`
 	NormalNum   int           `json:"normalNum"`
@@ -82,17 +82,17 @@ type MachineLoad struct {
 	Score int    `json:"score"`
 }
 
-// load balance
+// load balancer
 
-type LoadBalance struct {
-	Cluster     string        `json:"cluster"`
-	UserID      string        `json:"userID"`
-	NormalNum   int           `json:"normalNum"`
-	AbnormalNum int           `json:"abnormalNum"`
-	TopServices []ServiceInfo `json:"topServices"`
+type LoadBalancersSummary struct {
+	Cluster     string           `json:"cluster"`
+	UserID      string           `json:"userID"`
+	NormalNum   int              `json:"normalNum"`
+	AbnormalNum int              `json:"abnormalNum"`
+	TopIO       []LoadBalancerIO `json:"topIO"`
 }
 
-type ServiceInfo struct {
+type LoadBalancerIO struct {
 	Name      string `json:"name"`
 	Namespace string `json:"namespace"`
 	In        uint64 `json:"in"`
@@ -101,7 +101,7 @@ type ServiceInfo struct {
 
 // storage
 
-type Storage struct {
+type StorageSummary struct {
 	Cluster        string                 `json:"cluster"`
 	UserID         string                 `json:"userID"`
 	StorageClasses []StorageClassesStatus `json:"storageClasses"`
@@ -120,7 +120,7 @@ type StorageSet struct {
 
 // CI
 
-type ContinuousIntegration struct {
+type ContinuousIntegrationSummary struct {
 	UserID       string `json:"userID"`
 	WorkspaceNum int    `json:"workspaceNum"`
 	PipelineNum  int    `json:"pipelineNum"`
@@ -128,11 +128,11 @@ type ContinuousIntegration struct {
 
 // cargo
 
-type Cargo struct {
-	UserID     string     `json:"userID"`
-	Registries []Registry `json:"registries"`
+type CargoInfo struct {
+	UserID     string         `json:"userID"`
+	Registries []RegistryInfo `json:"registries"`
 }
-type Registry struct {
+type RegistryInfo struct {
 	User       string `json:"user"`
 	Name       string `json:"name"`
 	ProjectNum int    `json:"projectNum"`
@@ -157,7 +157,7 @@ type EventList struct {
 
 // addon health
 
-type AddonHealth struct {
+type AddonHealthSummary struct {
 	AbnormalNum int         `json:"abnormalNum"`
 	TotalNum    int         `json:"totalNum"`
 	Addons      []Component `json:"addons"`
@@ -170,7 +170,7 @@ type Component struct {
 
 // kube alerts
 
-type KubeHealth struct {
+type KubeHealthSummary struct {
 	AbnormalNum int         `json:"abnormalNum"`
 	TotalNum    int         `json:"totalNum"`
 	Components  []Component `json:"components"`
@@ -191,7 +191,7 @@ type AlertRecord struct {
 
 // platform
 
-type Platform struct {
+type PlatformSummary struct {
 	Cluster        string `json:"cluster"`
 	UserID         string `json:"userID"`
 	TeamNum        int    `json:"teamNum"`
@@ -201,7 +201,7 @@ type Platform struct {
 
 // app
 
-type App struct {
+type AppSummary struct {
 	Cluster     string `json:"cluster"`
 	UserID      string `json:"userID"`
 	NormalNum   int    `json:"normalNum"`
