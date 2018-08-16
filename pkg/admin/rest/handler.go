@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/caicloud/dashboard-admin/pkg/admin/helper"
-	apiv1a1 "github.com/caicloud/dashboard-admin/pkg/apis/api/v1alpha1"
+	apiv1a1 "github.com/caicloud/dashboard-admin/pkg/apis/v1alpha1"
 )
 
 func HandleListClusterInfo(c *helper.Content) func(ctx context.Context,
