@@ -33,7 +33,6 @@ type ListMetaData struct {
 type ClusterInfo struct {
 	// meta
 	Metadata ObjectMetaData `json:"metadata"`
-	UserID   string         `json:"userID"`
 	// sys-admin
 	Physical *Physical `json:"physical,omitempty"`
 	// all
@@ -49,13 +48,6 @@ type ClusterInfoList struct {
 	Items    []ClusterInfo `json:"items"`
 }
 
-type Resource struct {
-	// sys-admin
-	Physical *Physical `json:"physical"`
-	// all
-	Request Logical `json:"request"`
-	Limit   Logical `json:"limit"`
-}
 type Physical struct {
 	Capacity corev1.ResourceList `json:"capacity"`
 	Used     corev1.ResourceList `json:"used"`
@@ -69,8 +61,6 @@ type Logical struct {
 // machine
 
 type MachineSummary struct {
-	Cluster     string        `json:"cluster"`
-	UserID      string        `json:"userID"`
 	NormalNum   int           `json:"normalNum"`
 	AbnormalNum int           `json:"abnormalNum"`
 	OfflineNum  int           `json:"offlineNum"`
@@ -85,8 +75,6 @@ type MachineLoad struct {
 // load balancer
 
 type LoadBalancersSummary struct {
-	Cluster     string           `json:"cluster"`
-	UserID      string           `json:"userID"`
 	NormalNum   int              `json:"normalNum"`
 	AbnormalNum int              `json:"abnormalNum"`
 	TopIO       []LoadBalancerIO `json:"topIO"`
@@ -101,13 +89,12 @@ type LoadBalancerIO struct {
 
 // storage
 
-type StorageSummary struct {
-	Cluster        string                 `json:"cluster"`
-	UserID         string                 `json:"userID"`
-	StorageClasses []StorageClassesStatus `json:"storageClasses"`
+type StorageClassList struct {
+	MetaData ListMetaData         `json:"metadata"`
+	Items    []StorageClassStatus `json:"items"`
 }
 
-type StorageClassesStatus struct {
+type StorageClassStatus struct {
 	Name     string     `json:"name"`
 	Capacity StorageSet `json:"capacity"`
 	Used     StorageSet `json:"used"`
@@ -121,19 +108,18 @@ type StorageSet struct {
 // CI
 
 type ContinuousIntegrationSummary struct {
-	UserID       string `json:"userID"`
-	WorkspaceNum int    `json:"workspaceNum"`
-	PipelineNum  int    `json:"pipelineNum"`
+	WorkspaceNum int `json:"workspaceNum"`
+	PipelineNum  int `json:"pipelineNum"`
 }
 
 // cargo
 
-type CargoInfo struct {
-	UserID     string         `json:"userID"`
-	Registries []RegistryInfo `json:"registries"`
+type RegistryInfoList struct {
+	MetaData ListMetaData   `json:"metadata"`
+	Items    []RegistryInfo `json:"items"`
 }
+
 type RegistryInfo struct {
-	User       string `json:"user"`
 	Name       string `json:"name"`
 	ProjectNum int    `json:"projectNum"`
 	ImageNum   int    `json:"imageNum"`
@@ -143,11 +129,12 @@ type RegistryInfo struct {
 // event
 
 type Event struct {
-	Type     string    `json:"type"`
-	Result   string    `json:"result"`
-	Time     time.Time `json:"time"`
-	Operator string    `json:"operator"`
-	Message  string    `json:"message"`
+	Type    string    `json:"type"`
+	Result  string    `json:"result"`
+	Time    time.Time `json:"time"`
+	User    string    `json:"user"`
+	Tenant  string    `json:"tenant"`
+	Message string    `json:"message"`
 }
 
 type EventList struct {
@@ -192,19 +179,15 @@ type AlertRecord struct {
 // platform
 
 type PlatformSummary struct {
-	Cluster        string `json:"cluster"`
-	UserID         string `json:"userID"`
-	TeamNum        int    `json:"teamNum"`
-	UserNum        int    `json:"userNum"`
-	FreeMachineNum *int   `json:"freeMachineNum,omitempty"`
+	TeamNum        int  `json:"teamNum"`
+	UserNum        int  `json:"userNum"`
+	FreeMachineNum *int `json:"freeMachineNum,omitempty"`
 }
 
 // app
 
 type AppSummary struct {
-	Cluster     string `json:"cluster"`
-	UserID      string `json:"userID"`
-	NormalNum   int    `json:"normalNum"`
-	UpdatingNum int    `json:"updatingNum"`
-	AbnormalNum int    `json:"abnormalNum"`
+	NormalNum   int `json:"normalNum"`
+	UpdatingNum int `json:"updatingNum"`
+	AbnormalNum int `json:"abnormalNum"`
 }

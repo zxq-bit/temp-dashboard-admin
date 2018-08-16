@@ -28,6 +28,13 @@ func HandleGetLoadBalancersSummary(c *helper.Content) func(ctx context.Context,
 	}
 }
 
+func HandleListStorage(c *helper.Content) func(ctx context.Context,
+	xTenant, xUser, cluster string, start, limit int) (*apiv1a1.StorageClassList, error) {
+	return func(ctx context.Context, xTenant, xUser, cluster string, start, limit int) (*apiv1a1.StorageClassList, error) {
+		return &apiv1a1.StorageClassList{}, nil
+	}
+}
+
 func HandleGetContinuousIntegrationSummary(c *helper.Content) func(ctx context.Context,
 	xTenant, xUser string) (*apiv1a1.ContinuousIntegrationSummary, error) {
 	return func(ctx context.Context, xTenant, xUser string) (*apiv1a1.ContinuousIntegrationSummary, error) {
@@ -36,9 +43,9 @@ func HandleGetContinuousIntegrationSummary(c *helper.Content) func(ctx context.C
 }
 
 func HandleGetCargoInfo(c *helper.Content) func(ctx context.Context,
-	xTenant, xUser string) (*apiv1a1.CargoInfo, error) {
-	return func(ctx context.Context, xTenant, xUser string) (*apiv1a1.CargoInfo, error) {
-		return &apiv1a1.CargoInfo{}, nil
+	xTenant, xUser string) (*apiv1a1.RegistryInfoList, error) {
+	return func(ctx context.Context, xTenant, xUser string) (*apiv1a1.RegistryInfoList, error) {
+		return &apiv1a1.RegistryInfoList{}, nil
 	}
 }
 

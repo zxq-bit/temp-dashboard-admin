@@ -95,6 +95,23 @@ func InitNirvanaDescriptors(c *helper.Content) []definition.Descriptor {
 			},
 		},
 		{
+			Path: path.Join(constants.RootPath, fmt.Sprintf("/clusters/{%s}/storage", constants.ParameterCluster)),
+			Definitions: []definition.Definition{
+				{
+					Description: "list cluster storage info",
+					Method:      definition.List,
+					Function:    HandleListStorage(c),
+					Consumes:    []string{definition.MIMEAll}, Produces: []string{definition.MIMEJSON},
+					Parameters: []definition.Parameter{
+						HeaderParamXTenant, HeaderParamXUser,
+						PathParamCluster,
+						QueryParamStart, QueryParamLimit,
+					},
+					Results: commonResults,
+				},
+			},
+		},
+		{
 			Path: path.Join(constants.RootPath, fmt.Sprintf("/ci")),
 			Definitions: []definition.Definition{
 				{
