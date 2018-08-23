@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameClusterQuota = "ClusterQuota"
+)
+
 func (scc *subClusterCaches) GetClusterQuotaCache() (*ClusterQuotasCache, bool) {
 	return scc.GetAsClusterQuotaCache(CacheNameClusterQuota)
 }
@@ -76,7 +80,7 @@ func CacheGetClusterQuota(key string, indexer cache.Indexer, kc kubernetes.Inter
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if clusterQuota, _ := obj.(*tntv1al.ClusterQuota); clusterQuota != nil && clusterQuota.Name == key {
-				return clusterQuota.DeepCopy(), nil
+				return clusterQuota, nil
 			}
 		}
 	}

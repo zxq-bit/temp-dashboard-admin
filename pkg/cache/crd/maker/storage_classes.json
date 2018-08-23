@@ -1,0 +1,10 @@
+{
+  "name": "StorageClass",
+  "plural": "StorageClasses",
+  "varName": "storageClass",
+  "isNonNamespaced": false,
+  "importPath": "k8s.io/api/storage/v1",
+  "importName": "storagev1",
+  "clientPkgName": "StorageV1",
+  "clientName": "StorageClasses"
+}

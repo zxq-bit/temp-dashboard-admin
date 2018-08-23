@@ -1,0 +1,10 @@
+{
+  "name": "Machine",
+  "plural": "Machines",
+  "varName": "machine",
+  "isNonNamespaced": true,
+  "importPath": "github.com/caicloud/clientset/pkg/apis/resource/v1beta1",
+  "importName": "resv1b1",
+  "clientPkgName": "ResourceV1beta1",
+  "clientName": "Machines"
+}

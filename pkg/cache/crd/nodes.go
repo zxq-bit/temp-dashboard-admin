@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameNode = "Node"
+)
+
 func (scc *subClusterCaches) GetNodeCache() (*NodesCache, bool) {
 	return scc.GetAsNodeCache(CacheNameNode)
 }
@@ -54,6 +58,10 @@ func (tc *NodesCache) ListCachePointer() (re []*corev1.Node) {
 	return CacheListNodesPointer(tc.lwCache.indexer, tc.kc)
 }
 
+func (tc *NodesCache) Indexes() cache.Indexer {
+	return tc.lwCache.indexer
+}
+
 func GetNodeCacheConfig(kc kubernetes.Interface) (cache.ListerWatcher, runtime.Object) {
 	return &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -72,7 +80,7 @@ func CacheGetNode(key string, indexer cache.Indexer, kc kubernetes.Interface) (*
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if node, _ := obj.(*corev1.Node); node != nil && node.Name == key {
-				return node.DeepCopy(), nil
+				return node, nil
 			}
 		}
 	}

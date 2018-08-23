@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameTenant = "Tenant"
+)
+
 func (scc *subClusterCaches) GetTenantCache() (*TenantsCache, bool) {
 	return scc.GetAsTenantCache(CacheNameTenant)
 }
@@ -76,7 +80,7 @@ func CacheGetTenant(key string, indexer cache.Indexer, kc kubernetes.Interface) 
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if tenant, _ := obj.(*tntv1al.Tenant); tenant != nil && tenant.Name == key {
-				return tenant.DeepCopy(), nil
+				return tenant, nil
 			}
 		}
 	}

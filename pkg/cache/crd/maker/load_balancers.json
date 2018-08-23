@@ -1,0 +1,10 @@
+{
+  "name": "LoadBalancer",
+  "plural": "LoadBalancers",
+  "varName": "loadBalancer",
+  "isNonNamespaced": false,
+  "importPath": "github.com/caicloud/clientset/pkg/apis/loadbalance/v1alpha2",
+  "importName": "lbv1a2",
+  "clientPkgName": "LoadbalanceV1alpha2",
+  "clientName": "LoadBalancers"
+}

@@ -121,7 +121,6 @@ func New{{.Plural}}Cache(kc kubernetes.Interface) (*{{.Plural}}Cache, error) {
 func (tc *{{.Plural}}Cache) Run(stopCh chan struct{}) {
 	tc.lwCache.Run(stopCh)
 }
-
 {{if .IsNonNamespaced}}
 func (tc *{{.Plural}}Cache) Get(key string) (*{{.ImportName}}.{{.Name}}, error) {
 	return CacheGet{{.Name}}(key, tc.lwCache.indexer, tc.kc)
@@ -143,108 +142,77 @@ func (tc *{{.Plural}}Cache) ListCachePointer(namespace string) (re []*{{.ImportN
 	return CacheList{{.Plural}}Pointer(namespace, tc.lwCache.indexer, tc.kc)
 }
 {{end}}
+func (tc *{{.Plural}}Cache) Indexes() cache.Indexer {
+	return tc.lwCache.indexer
+}
 
 func Get{{.Name}}CacheConfig(kc kubernetes.Interface) (cache.ListerWatcher, runtime.Object) {
 	return &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.FieldSelector = fields.Everything().String()
-{{if .IsNonNamespaced}}
-			return kc.{{.ClientPkgName}}().{{.ClientName}}().List(options)
-{{else}}
-			return kc.{{.ClientPkgName}}().{{.ClientName}}(metav1.NamespaceAll).List(options)
-{{end}}
+			return {{if .IsNonNamespaced}}kc.{{.ClientPkgName}}().{{.ClientName}}().List(options){{else}}kc.{{.ClientPkgName}}().{{.ClientName}}(metav1.NamespaceAll).List(options){{end}}
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 			options.FieldSelector = fields.Everything().String()
 			options.Watch = true
-{{if .IsNonNamespaced}}
-			return kc.{{.ClientPkgName}}().{{.ClientName}}().Watch(options)
-{{else}}
-			return kc.{{.ClientPkgName}}().{{.ClientName}}(metav1.NamespaceAll).Watch(options)
-{{end}}
+			return {{if .IsNonNamespaced}}kc.{{.ClientPkgName}}().{{.ClientName}}().Watch(options){{else}}kc.{{.ClientPkgName}}().{{.ClientName}}(metav1.NamespaceAll).Watch(options){{end}}
 		},
 	}, &{{.ImportName}}.{{.Name}}{}
 }
 
-{{if .IsNonNamespaced}}
-func CacheGet{{.Name}}(key string, indexer cache.Indexer, kc kubernetes.Interface) (*{{.ImportName}}.{{.Name}}, error) {
-{{else}}
-func CacheGet{{.Name}}(namespace, key string, indexer cache.Indexer, kc kubernetes.Interface) (*{{.ImportName}}.{{.Name}}, error) {
-{{end}}
-	if indexer != nil {
+{{if .IsNonNamespaced}}func CacheGet{{.Name}}(key string, indexer cache.Indexer, kc kubernetes.Interface) (*{{.ImportName}}.{{.Name}}, error) {
+{{else}}func CacheGet{{.Name}}(namespace, key string, indexer cache.Indexer, kc kubernetes.Interface) (*{{.ImportName}}.{{.Name}}, error) {
+{{end}}	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
-{{if .IsNonNamespaced}}
-			if {{.VarName}}, _ := obj.(*{{.ImportName}}.{{.Name}}); {{.VarName}} != nil && {{.VarName}}.Name == key {
-{{else}}
-			if {{.VarName}}, _ := obj.(*{{.ImportName}}.{{.Name}}); CheckNamespace({{.VarName}}, namespace) && {{.VarName}}.Name == key {
-{{end}}
-				return {{.VarName}}.DeepCopy(), nil
+			{{if .IsNonNamespaced}}if {{.VarName}}, _ := obj.(*{{.ImportName}}.{{.Name}}); {{.VarName}} != nil && {{.VarName}}.Name == key {
+			{{else}}if {{.VarName}}, _ := obj.(*{{.ImportName}}.{{.Name}}); CheckNamespace({{.VarName}}, namespace) && {{.VarName}}.Name == key {
+			{{end}}	return {{.VarName}}, nil
 			}
 		}
 	}
 	if kc == nil {
 		return nil, errors.ErrVarKubeClientNil
 	}
-{{if .IsNonNamespaced}}
-	{{.VarName}}, e := kc.{{.ClientPkgName}}().{{.ClientName}}().Get(key, metav1.GetOptions{})
-{{else}}
-	{{.VarName}}, e := kc.{{.ClientPkgName}}().{{.ClientName}}(namespace).Get(key, metav1.GetOptions{})
-{{end}}
+	{{.VarName}}, e := kc.{{.ClientPkgName}}().{{.ClientName}}({{if .IsNonNamespaced}}{{else}}namespace{{end}}).Get(key, metav1.GetOptions{})
 	if e != nil {
 		return nil, e
 	}
 	return {{.VarName}}, nil
 }
 
-{{if .IsNonNamespaced}}
-func CacheList{{.Plural}}(indexer cache.Indexer, kc kubernetes.Interface) ([]{{.ImportName}}.{{.Name}}, error) {
-{{else}}
-func CacheList{{.Plural}}(namespace string, indexer cache.Indexer, kc kubernetes.Interface) ([]{{.ImportName}}.{{.Name}}, error) {
-{{end}}
-	if items := indexer.List(); len(items) > 0 {
+{{if .IsNonNamespaced}}func CacheList{{.Plural}}(indexer cache.Indexer, kc kubernetes.Interface) ([]{{.ImportName}}.{{.Name}}, error) {
+{{else}}func CacheList{{.Plural}}(namespace string, indexer cache.Indexer, kc kubernetes.Interface) ([]{{.ImportName}}.{{.Name}}, error) {
+{{end}}	if items := indexer.List(); len(items) > 0 {
 		re := make([]{{.ImportName}}.{{.Name}}, 0, len(items))
 		for _, obj := range items {
 			{{.VarName}}, _ := obj.(*{{.ImportName}}.{{.Name}})
-{{if .IsNonNamespaced}}
-			if {{.VarName}} != nil {
-{{else}}
-			if CheckNamespace({{.VarName}}, namespace) {
-{{end}}
-				re = append(re, *{{.VarName}})
+			{{if .IsNonNamespaced}}if {{.VarName}} != nil {
+			{{else}}if CheckNamespace({{.VarName}}, namespace) {
+			{{end}}	re = append(re, *{{.VarName}})
 			}
 		}
 		if len(re) > 0 {
 			return re, nil
 		}
 	}
-{{if .IsNonNamespaced}}
-	{{.VarName}}List, e := kc.{{.ClientPkgName}}().{{.ClientName}}().List(metav1.ListOptions{})
-{{else}}
-	{{.VarName}}List, e := kc.{{.ClientPkgName}}().{{.ClientName}}(namespace).List(metav1.ListOptions{})
-{{end}}
+	{{.VarName}}List, e := kc.{{.ClientPkgName}}().{{.ClientName}}({{if .IsNonNamespaced}}{{else}}namespace{{end}}).List(metav1.ListOptions{})
 	if e != nil {
 		return nil, e
 	}
 	return {{.VarName}}List.Items, nil
 }
 
-{{if .IsNonNamespaced}}
-func CacheList{{.Plural}}Pointer(indexer cache.Indexer, kc kubernetes.Interface) (re []*{{.ImportName}}.{{.Name}}) {
-{{else}}
-func CacheList{{.Plural}}Pointer(namespace string, indexer cache.Indexer, kc kubernetes.Interface) (re []*{{.ImportName}}.{{.Name}}) {
-{{end}}
-	// from cache
+{{if .IsNonNamespaced}}func CacheList{{.Plural}}Pointer(indexer cache.Indexer, kc kubernetes.Interface) (re []*{{.ImportName}}.{{.Name}}) {
+{{else}}func CacheList{{.Plural}}Pointer(namespace string, indexer cache.Indexer, kc kubernetes.Interface) (re []*{{.ImportName}}.{{.Name}}) {
+{{end}}	// from cache
 	items := indexer.List()
 	if len(items) > 0 {
 		re = make([]*{{.ImportName}}.{{.Name}}, 0, len(items))
 		for _, obj := range items {
 			{{.VarName}}, _ := obj.(*{{.ImportName}}.{{.Name}})
-{{if .IsNonNamespaced}}
-			if {{.VarName}} != nil {
-{{else}}
-			if CheckNamespace({{.VarName}}, namespace) {
-{{end}}
-				re = append(re, {{.VarName}})
+			{{if .IsNonNamespaced}}if {{.VarName}} != nil {
+			{{else}}if CheckNamespace({{.VarName}}, namespace) {
+			{{end}}	re = append(re, {{.VarName}})
 			}
 		}
 	}
@@ -252,11 +220,7 @@ func CacheList{{.Plural}}Pointer(namespace string, indexer cache.Indexer, kc kub
 		return re
 	}
 	// from source
-{{if .IsNonNamespaced}}
-	{{.VarName}}List, e := kc.{{.ClientPkgName}}().{{.ClientName}}().List(metav1.ListOptions{})
-{{else}}
-	{{.VarName}}List, e := kc.{{.ClientPkgName}}().{{.ClientName}}(namespace).List(metav1.ListOptions{})
-{{end}}
+	{{.VarName}}List, e := kc.{{.ClientPkgName}}().{{.ClientName}}({{if .IsNonNamespaced}}{{else}}namespace{{end}}).List(metav1.ListOptions{})
 	if e != nil || len({{.VarName}}List.Items) == 0 {
 		return nil
 	}

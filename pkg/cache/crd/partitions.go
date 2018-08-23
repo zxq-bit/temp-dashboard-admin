@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNamePartition = "Partition"
+)
+
 func (scc *subClusterCaches) GetPartitionCache() (*PartitionsCache, bool) {
 	return scc.GetAsPartitionCache(CacheNamePartition)
 }
@@ -76,7 +80,7 @@ func CacheGetPartition(key string, indexer cache.Indexer, kc kubernetes.Interfac
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if partition, _ := obj.(*tntv1al.Partition); partition != nil && partition.Name == key {
-				return partition.DeepCopy(), nil
+				return partition, nil
 			}
 		}
 	}

@@ -1,0 +1,10 @@
+{
+  "name": "Release",
+  "plural": "Releases",
+  "varName": "release",
+  "isNonNamespaced": false,
+  "importPath": "github.com/caicloud/clientset/pkg/apis/release/v1alpha1",
+  "importName": "rlsv1a1",
+  "clientPkgName": "ReleaseV1alpha1",
+  "clientName": "Releases"
+}

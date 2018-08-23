@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNamePod = "Pod"
+)
+
 func (scc *subClusterCaches) GetPodCache() (*PodsCache, bool) {
 	return scc.GetAsPodCache(CacheNamePod)
 }
@@ -54,6 +58,10 @@ func (tc *PodsCache) ListCachePointer(namespace string) (re []*corev1.Pod) {
 	return CacheListPodsPointer(namespace, tc.lwCache.indexer, tc.kc)
 }
 
+func (tc *PodsCache) Indexes() cache.Indexer {
+	return tc.lwCache.indexer
+}
+
 func GetPodCacheConfig(kc kubernetes.Interface) (cache.ListerWatcher, runtime.Object) {
 	return &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -72,7 +80,7 @@ func CacheGetPod(namespace, key string, indexer cache.Indexer, kc kubernetes.Int
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if pod, _ := obj.(*corev1.Pod); CheckNamespace(pod, namespace) && pod.Name == key {
-				return pod.DeepCopy(), nil
+				return pod, nil
 			}
 		}
 	}

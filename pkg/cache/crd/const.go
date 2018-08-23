@@ -5,19 +5,6 @@ import (
 )
 
 const (
-	CacheNameCluster      = "Cluster"
-	CacheNameMachine      = "Machine"
-	CacheNameNode         = "Node"
-	CacheNameRelease      = "Release"
-	CacheNamePod          = "Pod"
-	CacheNameClusterQuota = "ClusterQuota"
-	CacheNameTenant       = "Tenant"
-	CacheNamePartition    = "Partition"
-	CacheNameStorageClass = "StorageClass"
-	CacheNameLoadBalancer = "LoadBalancer"
-)
-
-const (
 	ClusterStatusNew           resv1b1.ClusterPhase = "New"
 	ClusterStatusInstallMaster resv1b1.ClusterPhase = "InstallMaster"
 	ClusterStatusInstallAddon  resv1b1.ClusterPhase = "InstallAddon"

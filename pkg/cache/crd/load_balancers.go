@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameLoadBalancer = "LoadBalancer"
+)
+
 func (scc *subClusterCaches) GetLoadBalancerCache() (*LoadBalancersCache, bool) {
 	return scc.GetAsLoadBalancerCache(CacheNameLoadBalancer)
 }
@@ -54,6 +58,10 @@ func (tc *LoadBalancersCache) ListCachePointer(namespace string) (re []*lbv1a2.L
 	return CacheListLoadBalancersPointer(namespace, tc.lwCache.indexer, tc.kc)
 }
 
+func (tc *LoadBalancersCache) Indexes() cache.Indexer {
+	return tc.lwCache.indexer
+}
+
 func GetLoadBalancerCacheConfig(kc kubernetes.Interface) (cache.ListerWatcher, runtime.Object) {
 	return &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -72,7 +80,7 @@ func CacheGetLoadBalancer(namespace, key string, indexer cache.Indexer, kc kuber
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if loadBalancer, _ := obj.(*lbv1a2.LoadBalancer); CheckNamespace(loadBalancer, namespace) && loadBalancer.Name == key {
-				return loadBalancer.DeepCopy(), nil
+				return loadBalancer, nil
 			}
 		}
 	}

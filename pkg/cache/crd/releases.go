@@ -12,6 +12,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameRelease = "Release"
+)
+
 func (scc *subClusterCaches) GetReleaseCache() (*ReleasesCache, bool) {
 	return scc.GetAsReleaseCache(CacheNameRelease)
 }
@@ -54,6 +58,10 @@ func (tc *ReleasesCache) ListCachePointer(namespace string) (re []*rlsv1a1.Relea
 	return CacheListReleasesPointer(namespace, tc.lwCache.indexer, tc.kc)
 }
 
+func (tc *ReleasesCache) Indexes() cache.Indexer {
+	return tc.lwCache.indexer
+}
+
 func GetReleaseCacheConfig(kc kubernetes.Interface) (cache.ListerWatcher, runtime.Object) {
 	return &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -72,7 +80,7 @@ func CacheGetRelease(namespace, key string, indexer cache.Indexer, kc kubernetes
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if release, _ := obj.(*rlsv1a1.Release); CheckNamespace(release, namespace) && release.Name == key {
-				return release.DeepCopy(), nil
+				return release, nil
 			}
 		}
 	}

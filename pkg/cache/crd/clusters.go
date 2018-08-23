@@ -14,6 +14,10 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameCluster = "Cluster"
+)
+
 type ClustersCache struct {
 	lwCache *ListWatchCache
 	kc      kubernetes.Interface
@@ -85,7 +89,7 @@ func CacheGetCluster(key string, indexer cache.Indexer, kc kubernetes.Interface)
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if cluster, _ := obj.(*resv1b1.Cluster); cluster != nil && cluster.Name == key {
-				return cluster.DeepCopy(), nil
+				return cluster, nil
 			}
 		}
 	}

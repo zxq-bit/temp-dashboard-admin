@@ -1,0 +1,10 @@
+{
+  "name": "ClusterQuota",
+  "plural": "ClusterQuotas",
+  "varName": "clusterQuota",
+  "isNonNamespaced": true,
+  "importPath": "github.com/caicloud/clientset/pkg/apis/tenant/v1alpha1",
+  "importName": "tntv1al",
+  "clientPkgName": "TenantV1alpha1",
+  "clientName": "ClusterQuotas"
+}

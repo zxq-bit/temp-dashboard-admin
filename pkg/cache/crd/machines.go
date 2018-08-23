@@ -12,6 +12,13 @@ import (
 	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
+const (
+	CacheNameMachine = "Machine"
+)
+
+func (scc *subClusterCaches) GetMachineCache() (*MachinesCache, bool) {
+	return scc.GetAsMachineCache(CacheNameMachine)
+}
 func (scc *subClusterCaches) GetAsMachineCache(name string) (*MachinesCache, bool) {
 	c, ok := scc.m[name]
 	if ok {
@@ -73,7 +80,7 @@ func CacheGetMachine(key string, indexer cache.Indexer, kc kubernetes.Interface)
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
 			if machine, _ := obj.(*resv1b1.Machine); machine != nil && machine.Name == key {
-				return machine.DeepCopy(), nil
+				return machine, nil
 			}
 		}
 	}
