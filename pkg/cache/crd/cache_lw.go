@@ -67,6 +67,10 @@ func (c *ListWatchCache) List() (items []interface{}) {
 	return c.indexer.List()
 }
 
+func (c *ListWatchCache) HasSynced() bool {
+	return c.informer.HasSynced()
+}
+
 // kube client
 
 func ForceUpdateKubeClientCache(syncMap *sync.Map, cluster *resv1b1.Cluster) {

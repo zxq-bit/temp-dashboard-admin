@@ -198,6 +198,8 @@ type subClusterCaches struct {
 	kc     kubernetes.Interface
 	m      map[string]*ListWatchCache
 	stopCh chan struct{}
+
+	hasSynced []func() bool
 }
 
 func NewSubClusterCaches(kc kubernetes.Interface, configs []Config, clusterName string) (*subClusterCaches, error) {
@@ -219,6 +221,7 @@ func NewSubClusterCaches(kc kubernetes.Interface, configs []Config, clusterName 
 			return nil, e
 		}
 		scc.m[name] = c
+		scc.hasSynced = append(scc.hasSynced, c.HasSynced)
 	}
 	return scc, nil
 }
@@ -235,6 +238,15 @@ func (scc *subClusterCaches) Start() {
 		}
 	}
 }
+func (scc *subClusterCaches) HasSynced() bool {
+	for _, f := range scc.hasSynced {
+		if !f() {
+			return false
+		}
+	}
+	return true
+}
+
 func (scc *subClusterCaches) Stop() {
 	close(scc.stopCh)
 }
