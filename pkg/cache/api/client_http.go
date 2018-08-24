@@ -1,4 +1,4 @@
-package db
+package api
 
 import (
 	"encoding/json"
@@ -8,23 +8,17 @@ import (
 	"time"
 )
 
-type Client struct {
-	httpClt *http.Client
-}
-
-func NewClient(timeout time.Duration) (*Client, error) {
+func NewHttpClient(timeout time.Duration) (*http.Client, error) {
 	if timeout < 0 {
 		return nil, fmt.Errorf("illegal timeout: %v", timeout)
 	}
-	return &Client{
-		httpClt: &http.Client{
-			Timeout: timeout,
-		},
+	return &http.Client{
+		Timeout: timeout,
 	}, nil
 }
 
-func (c *Client) doGet(url string, expectedCode int, result interface{}) error {
-	resp, e := c.httpClt.Get(url)
+func doGet(c *http.Client, url string, expectedCode int, result interface{}) error {
+	resp, e := c.Get(url)
 	if e != nil {
 		return e
 	}

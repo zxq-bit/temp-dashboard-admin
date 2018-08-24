@@ -1,6 +1,9 @@
-package db
+package api
 
-import "path"
+import (
+	"net/http"
+	"path"
+)
 
 const (
 	dexUrlBase    = "api"
@@ -17,48 +20,48 @@ const (
 	rolesListCode  = 200
 )
 
-func (c *Client) ListUsers(dexHost string) (*UserList, error) {
+func ListUsers(c *http.Client, dexHost string) (*UserList, error) {
 	re := new(UserList)
 	url := "http://" + path.Join(dexHost, dexUrlBase, dexApiVersion, usersListPath)
-	e := c.doGet(url, usersListCode, re)
+	e := doGet(c, url, usersListCode, re)
 	if e != nil {
 		return nil, e
 	}
 	return re, nil
 }
 
-func (c *Client) ListTenant(dexHost string) (*TenantList, error) {
+func ListTenant(c *http.Client, dexHost string) (*TenantList, error) {
 	re := new(TenantList)
 	url := "http://" + path.Join(dexHost, dexUrlBase, dexApiVersion, tenantListPath)
-	e := c.doGet(url, tenantListCode, re)
+	e := doGet(c, url, tenantListCode, re)
 	if e != nil {
 		return nil, e
 	}
 	return re, nil
 }
 
-func (c *Client) ListTeams(dexHost string) (*TeamList, error) {
+func ListTeams(c *http.Client, dexHost string) (*TeamList, error) {
 	re := new(TeamList)
 	url := "http://" + path.Join(dexHost, dexUrlBase, dexApiVersion, teamsListPath)
-	e := c.doGet(url, teamsListCode, re)
+	e := doGet(c, url, teamsListCode, re)
 	if e != nil {
 		return nil, e
 	}
 	return re, nil
 }
 
-func (c *Client) ListRoles(dexHost string) (*RoleList, error) {
+func ListRoles(c *http.Client, dexHost string) (*RoleList, error) {
 	re := new(RoleList)
 	url := "http://" + path.Join(dexHost, dexUrlBase, dexApiVersion, rolesListPath)
-	e := c.doGet(url, rolesListCode, re)
+	e := doGet(c, url, rolesListCode, re)
 	if e != nil {
 		return nil, e
 	}
 	return re, nil
 }
 
-func (c *Client) GetUsersMap(dexHost string) (map[string]*User, error) {
-	usersList, e := c.ListUsers(dexHost)
+func GetUsersMap(c *http.Client, dexHost string) (map[string]*User, error) {
+	usersList, e := ListUsers(c, dexHost)
 	if e != nil {
 		return nil, e
 	}
@@ -69,8 +72,8 @@ func (c *Client) GetUsersMap(dexHost string) (map[string]*User, error) {
 	}
 	return m, nil
 }
-func (c *Client) GetTenantMap(dexHost string) (map[string]*Tenant, error) {
-	tenantList, e := c.ListTenant(dexHost)
+func GetTenantMap(c *http.Client, dexHost string) (map[string]*Tenant, error) {
+	tenantList, e := ListTenant(c, dexHost)
 	if e != nil {
 		return nil, e
 	}
@@ -81,8 +84,8 @@ func (c *Client) GetTenantMap(dexHost string) (map[string]*Tenant, error) {
 	}
 	return m, nil
 }
-func (c *Client) GetTeamsMap(dexHost string) (map[string]*Team, error) {
-	teamsList, e := c.ListTeams(dexHost)
+func GetTeamsMap(c *http.Client, dexHost string) (map[string]*Team, error) {
+	teamsList, e := ListTeams(c, dexHost)
 	if e != nil {
 		return nil, e
 	}
@@ -93,8 +96,8 @@ func (c *Client) GetTeamsMap(dexHost string) (map[string]*Team, error) {
 	}
 	return m, nil
 }
-func (c *Client) GetRolesMap(dexHost string) (map[string]*Role, error) {
-	rolesList, e := c.ListRoles(dexHost)
+func GetRolesMap(c *http.Client, dexHost string) (map[string]*Role, error) {
+	rolesList, e := ListRoles(c, dexHost)
 	if e != nil {
 		return nil, e
 	}

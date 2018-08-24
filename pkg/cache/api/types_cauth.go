@@ -1,9 +1,9 @@
-package db
+package api
 
 import "time"
 
 // Meta defines metadata for all resources
-type Meta struct {
+type DexMeta struct {
 	LastModified time.Time         `json:"lastModified,omitempty"`
 	CreateTime   time.Time         `json:"createTime"`
 	DeleteTime   time.Time         `json:"deleteTime,omitempty"`
@@ -14,7 +14,7 @@ type Meta struct {
 // User defines user resource
 type User struct {
 	// Common metadata
-	Meta `json:",inline"`
+	DexMeta `json:",inline"`
 
 	// Username of the user
 	//
@@ -76,7 +76,7 @@ const (
 // Team is a set of user
 // It belongs to a Tenant
 type Team struct {
-	Meta        `json:",inline"`
+	DexMeta     `json:",inline"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -88,7 +88,7 @@ type Team struct {
 // Tenant is a bigger set of user
 type Tenant struct {
 	// Common metadata
-	Meta `json:",inline"`
+	DexMeta `json:",inline"`
 
 	// ID of the tenant
 	ID string `json:"id"`
@@ -108,15 +108,15 @@ type Tenant struct {
 }
 
 // ListMeta defines metadata for list
-type ListMeta struct {
-	Meta  `json:"-"`
-	Total int `json:"total"`
+type DexListMeta struct {
+	DexMeta `json:"-"`
+	Total   int `json:"total"`
 }
 
 // UserList is a list of User
 type UserList struct {
 	// Common list metadata
-	ListMeta `json:",inline"`
+	DexListMeta `json:",inline"`
 
 	// List of users.
 	Items []User `json:"items"`
@@ -125,7 +125,7 @@ type UserList struct {
 // TenantList is a list of Tenant
 type TenantList struct {
 	// Common list metadata
-	ListMeta `json:",inline"`
+	DexListMeta `json:",inline"`
 
 	// List of tenants
 	Items []Tenant `json:"items"`
@@ -133,20 +133,20 @@ type TenantList struct {
 
 // TeamList is a list of Team
 type TeamList struct {
-	ListMeta `json:",inline"`
-	Items    []Team `json:"items"`
+	DexListMeta `json:",inline"`
+	Items       []Team `json:"items"`
 }
 
 // MemberList is a list of Member
 type MemberList struct {
-	ListMeta `json:",inline"`
-	Items    []Member `json:"items"`
+	DexListMeta `json:",inline"`
+	Items       []Member `json:"items"`
 }
 
 // RoleList is a list of Role
 type RoleList struct {
 	// Common list metadata
-	ListMeta `json:",inline"`
+	DexListMeta `json:",inline"`
 
 	// List of roles.
 	Items []Role `json:"items"`
@@ -288,7 +288,7 @@ const (
 // Role defines authorization role which user can act as
 type Role struct {
 	// Common metadata
-	Meta `json:",inline"`
+	DexMeta `json:",inline"`
 
 	// Auto generated unique ID of the role.
 	ID string `json:"id"`
