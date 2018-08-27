@@ -36,11 +36,12 @@ type ClusterInfo struct {
 	// sys-admin
 	Physical *Physical `json:"physical,omitempty"`
 	// all
-	Request Logical `json:"request"`
-	Limit   Logical `json:"limit"`
-	NodeNum int     `json:"nodeNum"`
-	AppNum  int     `json:"appNum"`
-	PodNum  int     `json:"podNum"`
+	Request   Logical `json:"request"`
+	Limit     Logical `json:"limit"`
+	NodeNum   int     `json:"nodeNum"`
+	AppNum    int     `json:"appNum"`
+	PodNum    int     `json:"podNum"`
+	IsControl bool    `json:"isControl"`
 }
 
 type ClusterInfoList struct {
@@ -68,8 +69,9 @@ type MachineSummary struct {
 }
 
 type MachineLoad struct {
-	IP    string `json:"ip"`
-	Score int    `json:"score"`
+	IP       string `json:"ip"`
+	Score    int    `json:"score"`
+	IsMaster bool   `json:"isMaster"`
 }
 
 // load balancer
@@ -83,6 +85,7 @@ type LoadBalancersSummary struct {
 type LoadBalancerIO struct {
 	Name      string `json:"name"`
 	Namespace string `json:"namespace"`
+	IsSystem  bool   `json:"isSystem"`
 	In        uint64 `json:"in"`
 	Out       uint64 `json:"out"`
 }
@@ -96,6 +99,8 @@ type StorageClassList struct {
 
 type StorageClassStatus struct {
 	Name     string     `json:"name"`
+	Alias    string     `json:"alias"`
+	IsSystem bool       `json:"isSystem"`
 	Capacity StorageSet `json:"capacity"`
 	Used     StorageSet `json:"used"`
 }

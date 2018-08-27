@@ -51,6 +51,7 @@ func (s *Server) init(config *nirvana.Config) error {
 	if e != nil {
 		return fmt.Errorf("NewCache failed, %v", e)
 	}
+	go s.c.Run(s.stopCh)
 
 	// descriptor
 	config.Configure(
@@ -60,7 +61,6 @@ func (s *Server) init(config *nirvana.Config) error {
 }
 
 func (s *Server) Run() error {
-	go s.c.Run(s.stopCh)
 	defer close(s.stopCh)
 	return s.cmd.Execute()
 }

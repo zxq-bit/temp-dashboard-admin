@@ -30,7 +30,7 @@ func (c *CargoCache) Name() string {
 func (c *CargoCache) Refresh(client *http.Client, host string) error {
 	registries, e := GetRegistriesMap(client, host)
 	if e != nil {
-		log.Errorf("refresh list registry failed, %v")
+		log.Errorf("refresh list registry failed, %v", e)
 		return e
 	}
 

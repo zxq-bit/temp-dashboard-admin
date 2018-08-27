@@ -51,7 +51,7 @@ func (c *CauthCache) Refresh(client *http.Client, host string) error {
 		var e error
 		users, e = GetUsersMap(client, host)
 		if e != nil {
-			log.Errorf("refresh get user map failed, %v")
+			log.Errorf("refresh get user map failed, %v", e)
 			ec <- e
 		}
 		wg.Done()
@@ -60,7 +60,7 @@ func (c *CauthCache) Refresh(client *http.Client, host string) error {
 		var e error
 		teams, e = GetTeamsMap(client, host)
 		if e != nil {
-			log.Errorf("refresh get team map failed, %v")
+			log.Errorf("refresh get team map failed, %v", e)
 			ec <- e
 		}
 		wg.Done()
@@ -69,7 +69,7 @@ func (c *CauthCache) Refresh(client *http.Client, host string) error {
 		var e error
 		tenants, e = GetTenantMap(client, host)
 		if e != nil {
-			log.Errorf("refresh get tenant map failed, %v")
+			log.Errorf("refresh get tenant map failed, %v", e)
 			ec <- e
 		}
 		wg.Done()
@@ -78,7 +78,7 @@ func (c *CauthCache) Refresh(client *http.Client, host string) error {
 		var e error
 		roles, e = GetRolesMap(client, host)
 		if e != nil {
-			log.Errorf("refresh get role map failed, %v")
+			log.Errorf("refresh get role map failed, %v", e)
 			ec <- e
 		}
 		wg.Done()
