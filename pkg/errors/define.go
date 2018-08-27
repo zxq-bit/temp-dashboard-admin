@@ -11,6 +11,7 @@ const (
 
 	// bad request
 	ErrorReasonBadPageStartOrLimit = ReasonGroupStorage + "BadPageStartOrLimit"
+	ErrorReasonBadTenantOrUser     = ReasonGroupStorage + "BadTenantOrUser"
 	ErrorReasonBadRequestBody      = ReasonGroupStorage + "BadRequestBody"
 	ErrorReasonObjectAlreadyExist  = ReasonGroupStorage + "ObjectAlreadyExist"
 	ErrorReasonObjectNotFound      = ReasonGroupStorage + "ObjectNotFound"
@@ -37,6 +38,13 @@ var (
 func (fe *FormatError) SetErrorBadPageStartOrLimit(start, limit string) *FormatError {
 	fe.ApiError.Message = fmt.Sprintf("bad start or limit in query parameters start=%s, limit=%s", start, limit)
 	fe.Reason = ErrorReasonBadPageStartOrLimit
+	fe.HttpCode = http.StatusBadRequest
+	return fe
+}
+
+func (fe *FormatError) SetErrorBadTenantOrUser(xTenant, xUser string) *FormatError {
+	fe.ApiError.Message = fmt.Sprintf("bad tenant or user in header parameters [%s:%s]", xTenant, xUser)
+	fe.Reason = ErrorReasonBadTenantOrUser
 	fe.HttpCode = http.StatusBadRequest
 	return fe
 }
