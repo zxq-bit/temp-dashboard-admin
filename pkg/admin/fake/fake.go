@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
 	apiv1a1 "github.com/caicloud/dashboard-admin/pkg/apis/v1alpha1"
@@ -34,9 +35,44 @@ func ListClusterInfo() []apiv1a1.ClusterInfo {
 			Name:  getName(i),
 			Alias: getAlias(i),
 		}
-		ci.Physical = &apiv1a1.Physical{}
-		ci.Request = apiv1a1.Logical{}
-		ci.Limit = apiv1a1.Logical{}
+		ci.Physical = &apiv1a1.Physical{
+			Capacity: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*8, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*16*1024*1024*1024, resource.BinarySI),
+			},
+			Used: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*3, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*6*1024*1024*1024, resource.BinarySI),
+			},
+		}
+		ci.Request = apiv1a1.Logical{
+			Capacity: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*24, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*15*1024*1024*1024, resource.BinarySI),
+			},
+			SystemUsed: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*1, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*1*1024*1024*1024, resource.BinarySI),
+			},
+			UserUsed: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*2, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*5*1024*1024*1024, resource.BinarySI),
+			},
+		}
+		ci.Limit = apiv1a1.Logical{
+			Capacity: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*7, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*15*1024*1024*1024, resource.BinarySI),
+			},
+			SystemUsed: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*1, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*1*1024*1024*1024, resource.BinarySI),
+			},
+			UserUsed: corev1.ResourceList{
+				"cpu":    *resource.NewQuantity(int64(i+1)*2, resource.DecimalSI),
+				"memory": *resource.NewQuantity(int64(i+1)*5*1024*1024*1024, resource.BinarySI),
+			},
+		}
 		ci.NodeNum = (i + 1) * 3
 		ci.AppNum = (i + 1) * 4
 		ci.PodNum = (i + 1) * 5
