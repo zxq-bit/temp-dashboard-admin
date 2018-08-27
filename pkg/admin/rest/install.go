@@ -136,6 +136,7 @@ func InitNirvanaDescriptors(c *cache.Cache) []definition.Descriptor {
 					Consumes:    []string{definition.MIMEAll}, Produces: []string{definition.MIMEJSON},
 					Parameters: []definition.Parameter{
 						HeaderParamXTenant, HeaderParamXUser,
+						QueryParamStart, QueryParamLimit,
 					},
 					Results: commonResults,
 				},

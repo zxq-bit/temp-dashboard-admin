@@ -12,6 +12,7 @@ const (
 	// bad request
 	ErrorReasonBadPageStartOrLimit = ReasonGroupStorage + "BadPageStartOrLimit"
 	ErrorReasonBadTenantOrUser     = ReasonGroupStorage + "BadTenantOrUser"
+	ErrorReasonEmptyCluster        = ReasonGroupStorage + "EmptyCluster"
 	ErrorReasonBadRequestBody      = ReasonGroupStorage + "BadRequestBody"
 	ErrorReasonObjectAlreadyExist  = ReasonGroupStorage + "ObjectAlreadyExist"
 	ErrorReasonObjectNotFound      = ReasonGroupStorage + "ObjectNotFound"
@@ -45,6 +46,13 @@ func (fe *FormatError) SetErrorBadPageStartOrLimit(start, limit string) *FormatE
 func (fe *FormatError) SetErrorBadTenantOrUser(xTenant, xUser string) *FormatError {
 	fe.ApiError.Message = fmt.Sprintf("bad tenant or user in header parameters [%s:%s]", xTenant, xUser)
 	fe.Reason = ErrorReasonBadTenantOrUser
+	fe.HttpCode = http.StatusBadRequest
+	return fe
+}
+
+func (fe *FormatError) SetErrorEmptyCluster() *FormatError {
+	fe.ApiError.Message = fmt.Sprintf("empty cluster input")
+	fe.Reason = ErrorReasonEmptyCluster
 	fe.HttpCode = http.StatusBadRequest
 	return fe
 }

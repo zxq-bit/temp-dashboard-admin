@@ -7,9 +7,9 @@ import (
 )
 
 func ParamCheckTenantAndUser(xTenant, xUser string) (fe *errors.FormatError) {
-	if len(xTenant) == 0 {
-		fe = errors.NewError().SetErrorBadTenantOrUser(xTenant, xUser)
-	}
+	// if len(xTenant) == 0 { // Comment out for fake
+	// 	fe = errors.NewError().SetErrorBadTenantOrUser(xTenant, xUser)
+	// }
 	return
 }
 
