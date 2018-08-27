@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dashboard-admin
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: dashboard-admin
+      version: v0.0.1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: dashboard-admin
+        caicloud.io/cluster-service: "true"
+        kubernetes-admin.caicloud.io/application: dashboard-admin-v0.0.1
+        kubernetes-admin.caicloud.io/type: application
+        version: v0.0.1
+    spec:
+      containers:
+      - image: cargo.caicloudprivatetest.com/caicloud/dashboard-admin:83ad7d3
+        imagePullPolicy: Always
+        name: dashboard-admin
+        env:
+        - name: SERVER_KUBE_HOST
+          value: ""
+        - name: SERVER_KUBE_CONFIG
+          value: ""
+        - name: SERVER_PORT
+          value: "2587"
+        - name: SERVER_REFRESH_SECOND
+          value: "30"
+        - name: SERVER_TIMEOUT_SECOND
+          value: "3"
+        - name: SERVER_CARGO_ADMIN_HOST
+          value: "cargo-admin:8080"
+        - name: SERVER_CAUTH_HOST
+          value: "dex-cauth:8080"
+        - name: SERVER_DEV_OP_ADMIN_HOST
+          value: "devops-admin:7088"
+        ports:
+        - containerPort: 2587
+          name: port
+          protocol: TCP
+        resources:
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: default
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
