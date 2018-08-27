@@ -48,14 +48,14 @@ func (tc *StorageClassesCache) Run(stopCh chan struct{}) {
 	tc.lwCache.Run(stopCh)
 }
 
-func (tc *StorageClassesCache) Get(namespace, key string) (*storagev1.StorageClass, error) {
-	return CacheGetStorageClass(namespace, key, tc.lwCache.indexer, tc.kc)
+func (tc *StorageClassesCache) Get(key string) (*storagev1.StorageClass, error) {
+	return CacheGetStorageClass(key, tc.lwCache.indexer, tc.kc)
 }
-func (tc *StorageClassesCache) List(namespace string) ([]storagev1.StorageClass, error) {
-	return CacheListStorageClasses(namespace, tc.lwCache.indexer, tc.kc)
+func (tc *StorageClassesCache) List() ([]storagev1.StorageClass, error) {
+	return CacheListStorageClasses(tc.lwCache.indexer, tc.kc)
 }
-func (tc *StorageClassesCache) ListCachePointer(namespace string) (re []*storagev1.StorageClass) {
-	return CacheListStorageClassesPointer(namespace, tc.lwCache.indexer, tc.kc)
+func (tc *StorageClassesCache) ListCachePointer() (re []*storagev1.StorageClass) {
+	return CacheListStorageClassesPointer(tc.lwCache.indexer, tc.kc)
 }
 
 func (tc *StorageClassesCache) Indexes() cache.Indexer {
@@ -66,20 +66,20 @@ func GetStorageClassCacheConfig(kc kubernetes.Interface) (cache.ListerWatcher, r
 	return &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.FieldSelector = fields.Everything().String()
-			return kc.StorageV1().StorageClasses(metav1.NamespaceAll).List(options)
+			return kc.StorageV1().StorageClasses().List(options)
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 			options.FieldSelector = fields.Everything().String()
 			options.Watch = true
-			return kc.StorageV1().StorageClasses(metav1.NamespaceAll).Watch(options)
+			return kc.StorageV1().StorageClasses().Watch(options)
 		},
 	}, &storagev1.StorageClass{}
 }
 
-func CacheGetStorageClass(namespace, key string, indexer cache.Indexer, kc kubernetes.Interface) (*storagev1.StorageClass, error) {
+func CacheGetStorageClass(key string, indexer cache.Indexer, kc kubernetes.Interface) (*storagev1.StorageClass, error) {
 	if indexer != nil {
 		if obj, exist, e := indexer.GetByKey(key); exist && obj != nil && e == nil {
-			if storageClass, _ := obj.(*storagev1.StorageClass); CheckNamespace(storageClass, namespace) && storageClass.Name == key {
+			if storageClass, _ := obj.(*storagev1.StorageClass); storageClass != nil && storageClass.Name == key {
 				return storageClass, nil
 			}
 		}
@@ -87,19 +87,19 @@ func CacheGetStorageClass(namespace, key string, indexer cache.Indexer, kc kuber
 	if kc == nil {
 		return nil, errors.ErrVarKubeClientNil
 	}
-	storageClass, e := kc.StorageV1().StorageClasses(namespace).Get(key, metav1.GetOptions{})
+	storageClass, e := kc.StorageV1().StorageClasses().Get(key, metav1.GetOptions{})
 	if e != nil {
 		return nil, e
 	}
 	return storageClass, nil
 }
 
-func CacheListStorageClasses(namespace string, indexer cache.Indexer, kc kubernetes.Interface) ([]storagev1.StorageClass, error) {
+func CacheListStorageClasses(indexer cache.Indexer, kc kubernetes.Interface) ([]storagev1.StorageClass, error) {
 	if items := indexer.List(); len(items) > 0 {
 		re := make([]storagev1.StorageClass, 0, len(items))
 		for _, obj := range items {
 			storageClass, _ := obj.(*storagev1.StorageClass)
-			if CheckNamespace(storageClass, namespace) {
+			if storageClass != nil {
 				re = append(re, *storageClass)
 			}
 		}
@@ -107,21 +107,21 @@ func CacheListStorageClasses(namespace string, indexer cache.Indexer, kc kuberne
 			return re, nil
 		}
 	}
-	storageClassList, e := kc.StorageV1().StorageClasses(namespace).List(metav1.ListOptions{})
+	storageClassList, e := kc.StorageV1().StorageClasses().List(metav1.ListOptions{})
 	if e != nil {
 		return nil, e
 	}
 	return storageClassList.Items, nil
 }
 
-func CacheListStorageClassesPointer(namespace string, indexer cache.Indexer, kc kubernetes.Interface) (re []*storagev1.StorageClass) {
+func CacheListStorageClassesPointer(indexer cache.Indexer, kc kubernetes.Interface) (re []*storagev1.StorageClass) {
 	// from cache
 	items := indexer.List()
 	if len(items) > 0 {
 		re = make([]*storagev1.StorageClass, 0, len(items))
 		for _, obj := range items {
 			storageClass, _ := obj.(*storagev1.StorageClass)
-			if CheckNamespace(storageClass, namespace) {
+			if storageClass != nil {
 				re = append(re, storageClass)
 			}
 		}
@@ -130,7 +130,7 @@ func CacheListStorageClassesPointer(namespace string, indexer cache.Indexer, kc 
 		return re
 	}
 	// from source
-	storageClassList, e := kc.StorageV1().StorageClasses(namespace).List(metav1.ListOptions{})
+	storageClassList, e := kc.StorageV1().StorageClasses().List(metav1.ListOptions{})
 	if e != nil || len(storageClassList.Items) == 0 {
 		return nil
 	}

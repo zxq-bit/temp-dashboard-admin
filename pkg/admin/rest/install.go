@@ -6,7 +6,7 @@ import (
 
 	"github.com/caicloud/nirvana/definition"
 
-	"github.com/caicloud/dashboard-admin/pkg/admin/helper"
+	"github.com/caicloud/dashboard-admin/pkg/cache"
 	"github.com/caicloud/dashboard-admin/pkg/constants"
 )
 
@@ -43,7 +43,7 @@ var (
 	}
 )
 
-func InitNirvanaDescriptors(c *helper.Content) []definition.Descriptor {
+func InitNirvanaDescriptors(c *cache.Cache) []definition.Descriptor {
 	commonResults := definition.DataErrorResults("result")
 	return []definition.Descriptor{
 		{

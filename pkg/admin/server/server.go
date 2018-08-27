@@ -3,31 +3,28 @@ package server
 import (
 	"fmt"
 
+	"github.com/caicloud/dashboard-admin/pkg/cache"
 	"github.com/caicloud/nirvana"
 	"github.com/caicloud/nirvana/config"
 	"github.com/caicloud/nirvana/log"
 
-	"github.com/caicloud/dashboard-admin/pkg/admin/helper"
 	"github.com/caicloud/dashboard-admin/pkg/admin/rest"
+	cfg "github.com/caicloud/dashboard-admin/pkg/config"
 	"github.com/caicloud/dashboard-admin/pkg/constants"
-	"github.com/caicloud/dashboard-admin/pkg/kubernetes"
 )
 
 type Server struct {
-	cfg Config
+	cfg cfg.Config
 	cmd config.NirvanaCommand
 
 	stopCh chan struct{}
 
-	c *helper.Content
+	c *cache.Cache
 }
 
 func NewServer() (*Server, error) {
 	s := &Server{
-		cfg: Config{
-			KubeHost:   constants.DefaultKubeHost,
-			KubeConfig: constants.DefaultKubeConfig,
-		},
+		cfg: *cfg.NewDefaultConfig(),
 		cmd: config.NewNirvanaCommand(&config.Option{
 			Port: uint16(constants.DefaultListenPort),
 		}),
@@ -42,8 +39,6 @@ func NewServer() (*Server, error) {
 
 func (s *Server) init(config *nirvana.Config) error {
 	// config
-	kubeHost := s.cfg.KubeHost
-	kubeConfig := s.cfg.KubeConfig
 	e := s.cfg.Validate()
 	if e != nil {
 		log.Errorf("Validate config %v failed, %v", s.cfg.String(), e)
@@ -51,25 +46,21 @@ func (s *Server) init(config *nirvana.Config) error {
 	}
 	log.Info(s.cfg.String())
 
-	// kube
-	kc, e := kubernetes.NewClientFromFlags(kubeHost, kubeConfig)
-	if e != nil {
-		return fmt.Errorf("NewClientFromFlags failed, %v", e)
-	}
-
 	// helper
-	c, e := helper.NewContent(kc)
+	s.c, e = cache.NewCache(&s.cfg)
 	if e != nil {
-		return fmt.Errorf("NewContent failed, %v", e)
+		return fmt.Errorf("NewCache failed, %v", e)
 	}
 
 	// descriptor
 	config.Configure(
-		nirvana.Descriptor(rest.InitNirvanaDescriptors(c)...),
+		nirvana.Descriptor(rest.InitNirvanaDescriptors(s.c)...),
 	)
 	return nil
 }
 
 func (s *Server) Run() error {
+	go s.c.Run(s.stopCh)
+	defer close(s.stopCh)
 	return s.cmd.Execute()
 }

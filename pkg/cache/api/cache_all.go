@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/caicloud/nirvana/log"
+
+	"github.com/caicloud/dashboard-admin/pkg/config"
 )
 
 type Refresher interface {
@@ -13,36 +15,8 @@ type Refresher interface {
 	Refresh(client *http.Client, host string) error
 }
 
-type Config struct {
-	TimeoutSecond int
-	RefreshSecond int
-
-	CauthHost      string
-	DevOpAdminHost string
-	CargoAdminHost string
-}
-
-func (c *Config) Validate() error {
-	if c.TimeoutSecond < 0 {
-		return fmt.Errorf("illegal timeout seconds %d", c.TimeoutSecond)
-	}
-	if c.RefreshSecond < 1 {
-		return fmt.Errorf("illegal refresh seconds %d", c.RefreshSecond)
-	}
-	if len(c.CauthHost) == 0 {
-		return fmt.Errorf("empty cauth host")
-	}
-	if len(c.DevOpAdminHost) == 0 {
-		return fmt.Errorf("empty devop admin host")
-	}
-	if len(c.CargoAdminHost) == 0 {
-		return fmt.Errorf("empty cargo admin host")
-	}
-	return nil
-}
-
 type Cache struct {
-	cfg Config
+	cfg config.Config
 	clt *http.Client
 
 	CauthCache *CauthCache
@@ -50,7 +24,7 @@ type Cache struct {
 	CargoCache *CargoCache
 }
 
-func NewCache(cfg *Config) (*Cache, error) {
+func NewCache(cfg *config.Config) (*Cache, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("nil cache config")
 	}

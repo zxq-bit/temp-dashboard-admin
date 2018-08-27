@@ -27,4 +27,11 @@ const (
 	DefaultKubeHost   = ""
 	DefaultKubeConfig = ""
 	DefaultListenPort = 2587
+
+	DefaultTimeoutSecond = 3
+	DefaultRefreshSecond = 30
+
+	DefaultCauthHost      = "dex-cauth:8080"
+	DefaultDevOpAdminHost = "devops-admin:7088"
+	DefaultCargoAdminHost = "cargo-admin:8080"
 )
