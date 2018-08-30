@@ -201,7 +201,7 @@ func ListEvent() []apiv1a1.Event {
 func GetAddonHealthSummary() *apiv1a1.AddonHealthSummary {
 	return &apiv1a1.AddonHealthSummary{
 		AbnormalNum: 3,
-		TotalNum:    23,
+		NormalNum:   23,
 		Addons: []apiv1a1.Component{
 			{Name: "storage", Status: "normal"},
 			{Name: "tenant", Status: "normal"},
@@ -215,7 +215,7 @@ func GetAddonHealthSummary() *apiv1a1.AddonHealthSummary {
 func GetKubeHealthSummary() *apiv1a1.KubeHealthSummary {
 	return &apiv1a1.KubeHealthSummary{
 		AbnormalNum: 3,
-		TotalNum:    23,
+		NormalNum:   23,
 		Components: []apiv1a1.Component{
 			{Name: "apiserver-provider", Status: "normal"},
 			{Name: "kube-dns", Status: "normal"},

@@ -151,7 +151,7 @@ type EventList struct {
 
 type AddonHealthSummary struct {
 	AbnormalNum int         `json:"abnormalNum"`
-	TotalNum    int         `json:"totalNum"`
+	NormalNum   int         `json:"normalNum"`
 	Addons      []Component `json:"addons"`
 }
 
@@ -164,7 +164,7 @@ type Component struct {
 
 type KubeHealthSummary struct {
 	AbnormalNum int         `json:"abnormalNum"`
-	TotalNum    int         `json:"totalNum"`
+	NormalNum   int         `json:"normalNum"`
 	Components  []Component `json:"components"`
 }
 
